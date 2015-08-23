@@ -97,7 +97,7 @@ void start_run(const Config& configs, T* spec, const char* file) {
     for (int r = 0 ; r < R ; r++) {
       channel->insert(new DRAM<T>(spec, T::Level::Rank));
     }
-    Controller<T>* ctrl = new Controller<T>(channel);
+    Controller<T>* ctrl = new Controller<T>(configs, channel);
     ctrls.push_back(ctrl);
   }
   Memory<T, Controller> memory(ctrls);
