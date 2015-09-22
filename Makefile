@@ -16,7 +16,7 @@ CXXFLAGS := -O3 -std=c++11 -g -Wall
 all: depend ramulator
 
 clean:
-	rm -f ramulator-dramtrace ramulator-cputrace $(SRCDIR)/*.o
+	rm -f ramulator
 	rm -rf $(OBJDIR)
 
 depend: $(OBJDIR)/.depend
