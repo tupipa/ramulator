@@ -64,7 +64,7 @@ public:
 
         extend_channel_width(spec, cacheline);
 
-        return (MemoryBase *)populate_memory(spec, channels, ranks);
+        return (MemoryBase *)populate_memory(configs, spec, channels, ranks);
     }
 };
 
