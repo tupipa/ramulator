@@ -45,23 +45,6 @@ public:
     int get_ranks() const {return ranks;}
     int get_cpu_tick() const {return cpu_tick;}
     int get_mem_tick() const {return mem_tick;}
-    bool has_l3_cache() const {
-      if (options.find("cache") != options.end()) {
-        const std::string& cache_option = (options.find("cache"))->second;
-        return (cache_option == "all") || (cache_option == "L3");
-      } else {
-        return false;
-      }
-    }
-    bool has_core_caches() const {
-      if (options.find("cache") != options.end()) {
-        const std::string& cache_option = (options.find("cache"))->second;
-        // TODO also includes L1&L2 caches only mode.
-        return (cache_option == "all");
-      } else {
-        return false;
-      }
-    }
     bool is_early_exit() const {
       // the default value is true
       if (options.find("early_exit") != options.end()) {
