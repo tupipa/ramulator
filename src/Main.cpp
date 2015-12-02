@@ -70,6 +70,18 @@ void run_dramtrace(const Config& configs, Memory<T, Controller>& memory, const c
 
 }
 
+
+/* @configs, Config instance from config file.
+ *
+ * @memory, the instance of Memory.
+ *
+ * @file, output filename.
+ * 
+ * 
+ * what's cpu_tick? auto send? bind?
+ *
+ */
+
 template <typename T>
 void run_cputrace(const Config& configs, Memory<T, Controller>& memory, const char * file)
 {
@@ -96,6 +108,16 @@ void run_cputrace(const Config& configs, Memory<T, Controller>& memory, const ch
     Stats::statlist.printall();
 }
 
+/* @configs, Config instance from config file.
+ *
+ * @spec, the instance of different standards.
+ *
+ * @file, output filename.
+ * 
+ * initial channels and ranks, create DRAM channel, Controller, and Memory
+ * then run the trace via <configs, memory, file>
+ *
+ */
 template<typename T>
 void start_run(const Config& configs, T* spec, const char* file) {
   // initiate controller and memory
@@ -128,6 +150,7 @@ int main(int argc, const char *argv[])
         return 0;
     }
 
+	/* create instance of Config using config file argv[1]*/
     Config configs(argv[1]);
 
     const std::string& standard = configs["standard"];
@@ -146,6 +169,8 @@ int main(int argc, const char *argv[])
 
     int trace_start = 3;
     string stats_out;
+	
+	// parse the output file name
     if (strcmp(argv[3], "--stats") == 0) {
       Stats::statlist.output(argv[4]);
       stats_out = argv[4];
@@ -154,8 +179,13 @@ int main(int argc, const char *argv[])
       Stats::statlist.output(standard+".stats");
       stats_out = standard + string(".stats");
     }
+
+	/* get the trace file name */
     const char* file = argv[trace_start];
 
+	/* parse the standard name, create the instance for that standard Class,
+	 * and start to run with <configs, standard instance, outputfile> 
+	 */
     if (standard == "DDR3") {
       DDR3* ddr3 = new DDR3(configs["org"], configs["speed"]);
       start_run(configs, ddr3, file);
