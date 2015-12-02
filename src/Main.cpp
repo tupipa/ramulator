@@ -75,10 +75,11 @@ void run_dramtrace(const Config& configs, Memory<T, Controller>& memory, const c
  *
  * @memory, the instance of Memory.
  *
- * @file, output filename.
+ * @file, trace filename.
  * 
+ * create Processor proc. run Processor::tick in loop, 
+ *  and run one memory.tick after a certain number of cpu_tick.
  * 
- * what's cpu_tick? auto send? bind?
  *
  */
 
@@ -87,7 +88,11 @@ void run_cputrace(const Config& configs, Memory<T, Controller>& memory, const ch
 {
     int cpu_tick = configs.get_cpu_tick();
     int mem_tick = configs.get_mem_tick();
+    // create a send function by combining Memory::send with 
+    //  first parameter fixed to &memory and second parameter left undetermined.
     auto send = bind(&Memory<T, Controller>::send, &memory, placeholders::_1);
+    // create Processor using <configs, trace filename, send function);>
+    //  matching constructor Processor(const Config& configs, const char* trace_fname, function<bool(Request)> send)
     Processor proc(configs, file, send);
     for (long i = 0; ; i++) {
         proc.tick();
@@ -112,7 +117,7 @@ void run_cputrace(const Config& configs, Memory<T, Controller>& memory, const ch
  *
  * @spec, the instance of different standards.
  *
- * @file, output filename.
+ * @file, trace filename.
  * 
  * initial channels and ranks, create DRAM channel, Controller, and Memory
  * then run the trace via <configs, memory, file>
@@ -184,7 +189,7 @@ int main(int argc, const char *argv[])
     const char* file = argv[trace_start];
 
 	/* parse the standard name, create the instance for that standard Class,
-	 * and start to run with <configs, standard instance, outputfile> 
+	 * and start to run with <configs, standard instance, trace filename> 
 	 */
     if (standard == "DDR3") {
       DDR3* ddr3 = new DDR3(configs["org"], configs["speed"]);
