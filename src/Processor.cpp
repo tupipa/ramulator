@@ -79,10 +79,10 @@ void Processor::tick()
     // bubbles (non-memory operations)
     int inserted = 0;
     while (bubble_cnt > 0) {
-        if (inserted == window.ipc) return;
-        if (window.is_full()) return;
+        if (inserted == window.ipc) return; // instructions exceed ipc of the window, a cpu cycle time out
+        if (window.is_full()) return; // when a window is full, a cycle time out. why?
 
-        window.insert(true, -1);
+        window.insert(true, -1); //insert instruction to window, emulating running.
         inserted++;
         bubble_cnt--;
         cpu_inst++;
