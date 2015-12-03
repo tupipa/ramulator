@@ -4,6 +4,41 @@
 using namespace std;
 using namespace ramulator;
 
+/*
+ * The Out-of-Order execution paradigm breaks up 
+ * the processing of instructions into these steps:
+
+	1, Instruction fetch.
+	2, Instruction dispatch to an instruction queue (also called 
+		instruction buffer or reservation stations).
+	3, The instruction waits in the queue until its input operands
+		are available. The instruction is then allowed to leave 
+		the queue before earlier, older instructions.
+	4, The instruction is issued to the appropriate functional unit
+		and executed by that unit.
+	5, The results are queued.
+	6, Only after all older instructions have their results 
+		written back to the register file, then this result is 
+		written back to the register file. This is called the 
+		graduation or retire stage.
+
+ *	The key concept of OoOE processing is to allow the processor
+ 		to avoid a class of stalls that occur when the data needed
+ 		to perform an operation are unavailable. In the outline 
+ 		above, the OoOE processor avoids the stall that occurs in 
+ 		step (2) of the in-order processor when the instruction 
+ 		is not completely ready to be processed due to missing data.
+
+ *	OoOE processors fill these "slots" in time with other instructions
+ 		that are ready, then re-order the results at the end to make 
+ 		it appear that the instructions were processed as normal.
+ *
+ * cite:https://en.wikipedia.org/wiki/Out-of-order_execution
+ *      http://home.gwu.edu/~jiec/docs/sesc/sesc_intro.pdf
+ *		
+ */
+
+
 Processor::Processor(const Config& configs, const char* trace_fname, function<bool(Request)> send)
     : send(send), callback(bind(&Processor::receive, this, placeholders::_1)), trace(trace_fname)
 {
