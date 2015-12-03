@@ -190,6 +190,8 @@ Trace::Trace(const char* trace_fname) : file(trace_fname)
     if (!file.good()) {
         std::cerr << "Bad trace file: " << trace_fname << std::endl;
         exit(1);
+    }else{
+    	std::cout << "lelema: in Processor.cpp, Trace::Trace(): good trace file: " << trace_fname << std::endl;
     }
 }
 
@@ -199,6 +201,8 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
     static bool has_write = false;
     static long write_addr;
     static int line_num = 0;
+	
+	 //what's this?
     if (has_write){
         bubble_cnt = 0;
         req_addr = write_addr;
@@ -219,11 +223,11 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
 
     size_t pos, end;
     bubble_cnt = std::stoul(line, &pos, 10);
-    //std::cout << "Bubble_Count: " << bubble_cnt << std::endl;
+    std::cout << "lelema: in Processor.cpp, Trace::get_request(): Bubble_Count: " << bubble_cnt << std::endl;
 
     pos = line.find_first_not_of(' ', pos+1);
     req_addr = stoul(line.substr(pos), &end, 0);
-    //std::cout << "Req_Addr: " << req_addr << std::endl;
+    std::cout << "lelema: in Processor.cpp, Trace::get_request(): Req_Addr: " << req_addr << std::endl;
     req_type = Request::Type::READ;
 
     pos = line.find_first_not_of(' ', pos+end);
