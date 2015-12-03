@@ -90,6 +90,8 @@ void run_cputrace(const Config& configs, Memory<T, Controller>& memory, const ch
     int mem_tick = configs.get_mem_tick();
     // create a send function by combining Memory::send with 
     //  first parameter fixed to &memory and second parameter left undetermined.
+    //  send function can be called like 'send(parameter2);' where parameter2 will fill the placeholder _1.
+    
     auto send = bind(&Memory<T, Controller>::send, &memory, placeholders::_1);
     // create Processor using <configs, trace filename, send function);>
     //  matching constructor Processor(const Config& configs, const char* trace_fname, function<bool(Request)> send)
