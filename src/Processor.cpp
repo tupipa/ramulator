@@ -100,7 +100,7 @@ void Processor::tick()
 
         window.insert(false, req_addr);
         cpu_inst++;
-        more_reqs = trace.get_request(bubble_cnt, req_addr, req_type);
+        more_reqs = trace.get_request(bubble_cnt, req_addr, req_type); //get next request
         return;
     }
     else {
@@ -195,6 +195,11 @@ Trace::Trace(const char* trace_fname) : file(trace_fname)
     }
 }
 
+/*
+ * read one request from Trace file.
+ * 
+ * 
+ */
 
 bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_type)
 {
@@ -202,7 +207,8 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
     static long write_addr;
     static int line_num = 0;
 	
-	 //what's this?
+	 //'has_write' is a common var for all instances of Trace::get_request(), 
+	 // see static var: http://stackoverflow.com/questions/6223355/static-variables-in-class-methods
     if (has_write){
         bubble_cnt = 0;
         req_addr = write_addr;
@@ -210,10 +216,11 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
         has_write = false;
         return true;
     }
+	// read one line from trace file
     string line;
     getline(file, line);
     line_num ++;
-    if (file.eof() || line.size() == 0) {
+    if (file.eof() || line.size() == 0) { //reach the end of the line; or reach blank line; stop.
         file.clear();
         file.seekg(0);
         // getline(file, line);
@@ -221,6 +228,7 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
         return false;
     }
 
+	//parse one request line. Format: <bubble, addr, type>
     size_t pos, end;
     bubble_cnt = std::stoul(line, &pos, 10);
     std::cout << "lelema: in Processor.cpp, Trace::get_request(): Bubble_Count: " << bubble_cnt << std::endl;
@@ -228,14 +236,14 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
     pos = line.find_first_not_of(' ', pos+1);
     req_addr = stoul(line.substr(pos), &end, 0);
     std::cout << "lelema: in Processor.cpp, Trace::get_request(): Req_Addr: " << req_addr << std::endl;
-    req_type = Request::Type::READ;
+    req_type = Request::Type::READ; // all read ????
 
     pos = line.find_first_not_of(' ', pos+end);
     if (pos != string::npos){
         has_write = true;
         write_addr = stoul(line.substr(pos), NULL, 0);
     }
-    return true;
+    return true; //read a request successfully from the trace file.
 }
 
 bool Trace::get_request(long& req_addr, Request::Type& req_type)
