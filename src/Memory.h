@@ -81,7 +81,7 @@ public:
         int *sz = spec->org_entry.count;
         assert((sz[0] & (sz[0] - 1)) == 0);
         assert((sz[1] & (sz[1] - 1)) == 0);
-        // validate size of one transaction
+        // validate size of one transaction. ll: what's transaction here?
         int tx = (spec->prefetch_size * spec->channel_width / 8);
         tx_bits = calc_log2(tx);
         assert((1<<tx_bits) == tx);
@@ -223,7 +223,12 @@ public:
         in_queue_read_req_num_sum += cur_que_readreq_num;
         in_queue_write_req_num_sum += cur_que_writereq_num;
     }
-
+    /*
+	 *@Request: a memory access request.
+	 *
+	 *ll: Processors could send a request(R/W) to memory through this function.
+	 *
+	 */
     bool send(Request req)
     {
         req.addr_vec.resize(addr_bits.size());
@@ -231,12 +236,16 @@ public:
         // Each transaction size is 2^tx_bits, so first clear the lowest tx_bits bits
         clear_lower_bits(addr, tx_bits);
 
+		/**ll:rr: translate the address according to address 'type'
+		 *	after translation: address stored in addr_vec, where
+		 *	addr_vec[0..4] is Channel,Rank,Bank,Row,Column.
+		 */
         switch(int(type)){
             case int(Type::ChRaBaRoCo):
                 for (int i = addr_bits.size() - 1; i >= 0; i--)
                     req.addr_vec[i] = slice_lower_bits(addr, addr_bits[i]);
                 break;
-            case int(Type::RoBaRaCoCh):
+            case int(Type::RoBaRaCoCh): //ll: currently only this case, see declaration of type in this file.
                 req.addr_vec[0] = slice_lower_bits(addr, addr_bits[0]);
                 req.addr_vec[addr_bits.size() - 1] = slice_lower_bits(addr, addr_bits[addr_bits.size() - 1]);
                 for (int i = 1; i <= int(T::Level::Row); i++)

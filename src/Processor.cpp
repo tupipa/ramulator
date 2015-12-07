@@ -79,10 +79,12 @@ void Processor::tick()
     // bubbles (non-memory operations)
     int inserted = 0;
     while (bubble_cnt > 0) {
-        if (inserted == window.ipc) return; // instructions exceed ipc of the window, a cpu cycle time out
-        if (window.is_full()) return; // when a window is full, a cycle time out. why?
+        if (inserted == window.ipc) return; //ll: instructions exceed ipc of the window, a cpu cycle time out.
+        if (window.is_full()) return; //ll: when a window is full, a cycle time out. 
+        //Need to use another CPU cycle to run.
+        //window.is_full() means: load == depth;
 
-        window.insert(true, -1); //insert instruction to window, emulating running.
+        window.insert(true, -1); //ll: insert instruction to window, emulating running.
         inserted++;
         bubble_cnt--;
         cpu_inst++;
@@ -94,20 +96,20 @@ void Processor::tick()
         if (window.is_full()) return;
 
         Request req(req_addr, req_type, callback);
-        if (!send(req)) return;
+        if (!send(req)) return;//ll: call 'send(req)'.
 
         //cout << "Inserted: " << clk << "\n";
 
         window.insert(false, req_addr);
         cpu_inst++;
-        more_reqs = trace.get_request(bubble_cnt, req_addr, req_type); //get next request
+        more_reqs = trace.get_request(bubble_cnt, req_addr, req_type); //ll: get next request
         return;
     }
     else {
         // write request
         assert(req_type == Request::Type::WRITE);
         Request req(req_addr, req_type, callback);
-        if (!send(req)) return;
+        if (!send(req)) return; //ll: call send(req)
         cpu_inst++;
     }
 
@@ -120,8 +122,8 @@ bool Processor::finished()
 }
 void Processor::receive(Request& req) 
 {
-    window.set_ready(req.addr);
-    if (req.arrive != -1 && req.depart > last) {
+    window.set_ready(req.addr);// when CPU get data from memory. Set ready for the address in the Window
+    if (req.arrive != -1 && req.depart > last) { //what's this? After get one data in the Window?
       memory_access_cycles += (req.depart - max(last, req.arrive));
       last = req.depart;
     }
@@ -207,8 +209,8 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
     static long write_addr;
     static int line_num = 0;
 	
-	 //'has_write' is a common var for all instances of Trace::get_request(), 
-	 // see static var: http://stackoverflow.com/questions/6223355/static-variables-in-class-methods
+	 //ll:'has_write' is a common var for all instances of Trace::get_request(), 
+	 //ll: see static var: http://stackoverflow.com/questions/6223355/static-variables-in-class-methods
     if (has_write){
         bubble_cnt = 0;
         req_addr = write_addr;
@@ -216,11 +218,11 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
         has_write = false;
         return true;
     }
-	// read one line from trace file
+	//ll: read one line from trace file
     string line;
     getline(file, line);
     line_num ++;
-    if (file.eof() || line.size() == 0) { //reach the end of the line; or reach blank line; stop.
+    if (file.eof() || line.size() == 0) { //ll:reach the end of the line; or reach blank line; stop.
         file.clear();
         file.seekg(0);
         // getline(file, line);
@@ -228,7 +230,7 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
         return false;
     }
 
-	//parse one request line. Format: <bubble, addr, type>
+	//ll: parse one request line. Format: <bubble, addr, type>
     size_t pos, end;
     bubble_cnt = std::stoul(line, &pos, 10);
     std::cout << "lelema: in Processor.cpp, Trace::get_request(): Bubble_Count: " << bubble_cnt << std::endl;
