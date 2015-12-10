@@ -97,7 +97,7 @@ void run_cputrace(const Config& configs, Memory<T, Controller>& memory, const ch
     //  matching constructor Processor(const Config& configs, const char* trace_fname, function<bool(Request)> send)
     Processor proc(configs, file, send);
     for (long i = 0; ; i++) {
-        proc.tick();
+        proc.tick(); //
         Stats::curTick++; // processor clock, global, for Statistics
         if (i % cpu_tick == (cpu_tick - 1))
             for (int j = 0; j < mem_tick; j++)// what's the relation? cpu_tick v.s. mem_tick?

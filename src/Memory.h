@@ -199,12 +199,12 @@ public:
 
     void tick()
     {
-        ++num_dram_cycles;
+        ++num_dram_cycles; //ll: what has been done in a mem cycle?
 
         bool is_active = false;
         for (auto ctrl : ctrls) {
           is_active = is_active || ctrl->is_active();
-          ctrl->tick();
+          ctrl->tick(); //ll: what's this?
         }
         if (is_active) {
           ramulator_active_cycles++;
@@ -255,14 +255,18 @@ public:
                 assert(false);
         }
 
-        if(ctrls[req.addr_vec[0]]->enqueue(req)) {
+//Rq: now we have the request address in the format of 
+//		'Channel,Rank,Bank,Row,Column' represented by 'addr_vec[0,1,2,3,4]'
+        if(ctrls[req.addr_vec[0]]->enqueue(req)) { 
+			//Rq: place to req into channel's waiting queue, if successfully enqueued, count for the request.
+			
             // tally stats here to avoid double counting for requests that aren't enqueued
             ++num_incoming_requests;
-            if (req.type == Request::Type::READ) {
+            if (req.type == Request::Type::READ) { //Rq: count for read request
               ++num_read_requests;
-              ++incoming_read_reqs_per_channel[req.addr_vec[int(T::Level::Channel)]];
+              ++incoming_read_reqs_per_channel[req.addr_vec[int(T::Level::Channel)]]; //ll: T::Level::Channel here should be 0? or the former addr_vec[0] is equal to this indexing expression?
             }
-            if (req.type == Request::Type::WRITE) {
+            if (req.type == Request::Type::WRITE) { //Rq: count for write request
               ++num_write_requests;
               ++incoming_write_reqs_per_channel[req.addr_vec[int(T::Level::Channel)]];
             }

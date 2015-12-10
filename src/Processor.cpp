@@ -68,6 +68,15 @@ double Processor::calc_ipc()
     return (double) retired / clk;
 }
 
+/* Processor::tick()
+ * 1, count for cpu cycle;
+ * 2, simulate non-memory instructions: count along with window.ipc;
+ * 3, simulate memory R/W:	read inserted in window with false (cpu need feedback from mem to proceed, call Window::set_ready(addr) when data is ready), 
+ 								but write not inserted in window (because cpu don't need the feedback to proceed);
+ *							call send to count for memory request in Memory::send();
+ *--Rq & ll.
+ */
+
 void Processor::tick() 
 {
     clk++;
@@ -90,13 +99,13 @@ void Processor::tick()
         cpu_inst++;
     }
 
-    if (req_type == Request::Type::READ) {
+    if (req_type == Request::Type::READ) { // read request is inserted into ooo window, while write request is not.
         // read request
         if (inserted == window.ipc) return;
         if (window.is_full()) return;
 
         Request req(req_addr, req_type, callback);
-        if (!send(req)) return;//ll: call 'send(req)'.
+        if (!send(req)) return;//ll: call 'send(req)'. count for request in channel ctrl.
 
         //cout << "Inserted: " << clk << "\n";
 
@@ -109,7 +118,7 @@ void Processor::tick()
         // write request
         assert(req_type == Request::Type::WRITE);
         Request req(req_addr, req_type, callback);
-        if (!send(req)) return; //ll: call send(req)
+        if (!send(req)) return; //ll: call send(req), count for request in channel ctrl.
         cpu_inst++;
     }
 
@@ -152,7 +161,12 @@ void Window::insert(bool ready, long addr)
     load++;
 }
 
-
+/*Rq: retire: 
+ * 		delete the ready Insts in the ooo window; return the number of Insts deleted.
+ *
+ *** 	*the window is presented by 'vector<bool> ready_list' and 'vector<long> addr_list',
+ 		 using 'tail' and 'head' to index the last and first elements; The head is the newest inserted.
+ **/
 long Window::retire()
 {
     assert(load <= depth);

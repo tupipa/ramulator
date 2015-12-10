@@ -29,6 +29,14 @@ private:
 };
 
 
+/*
+* Window class: 
+*	simulate the ooo buffer ? 
+*
+*the window is presented by 'vector<bool> ready_list' and 'vector<long> addr_list',
+ 		 using 'tail' and 'head' to index the last and first elements; The head is the newest inserted.
+*/
+
 class Window {
 public:
     int ipc = 4;
