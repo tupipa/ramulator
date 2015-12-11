@@ -357,13 +357,14 @@ public:
         issue_cmd(cmd, get_addr_vec(cmd, req));
 
         // check whether this is the last command (which finishes the request)
-        if (cmd != channel->spec->translate[int(req->type)])
+        if (cmd != channel->spec->translate[int(req->type)])// cmd is not last command.
             return;
 
         // set a future completion time for read requests
         if (req->type == Request::Type::READ) {
-            req->depart = clk + channel->spec->read_latency; //Rq:*** simulate read latency.
-            pending.push_back(*req);
+            //req->depart = clk + channel->spec->read_latency; //Rq:*** simulate read latency.
+			req->depart = clk + channel->spec->read_latency + 1;//add one more cycle for per read operation
+			pending.push_back(*req);
         }
 
         if (req->type == Request::Type::WRITE) { // log the statistics
