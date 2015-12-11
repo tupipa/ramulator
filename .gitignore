@@ -5,3 +5,32 @@ obj/
 
 # Compiled target executable files
 ramulator
+
+# uncomressed zip traces and other files in cputraces/
+
+DDR3.stats
+cputraces/401.bzip2
+cputraces/403.gcc
+cputraces/429.mcf
+cputraces/433.milc
+cputraces/434.zeusmp
+cputraces/435.gromacs
+cputraces/436.cactusADM
+cputraces/437.leslie3d
+cputraces/444.namd
+cputraces/445.gobmk
+cputraces/447.dealII
+cputraces/450.soplex
+cputraces/456.hmmer
+cputraces/458.sjeng
+cputraces/459.GemsFDTD
+cputraces/462.libquantum
+cputraces/464.h264ref
+cputraces/470.lbm
+cputraces/471.omnetpp
+cputraces/473.astar
+cputraces/481.wrf
+cputraces/482.sphinx3
+cputraces/483.xalancbmk
+myoutput/
+
