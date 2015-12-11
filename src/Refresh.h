@@ -69,6 +69,7 @@ public:
   }
 
   // Basic refresh scheduling for all bank refresh that is applicable to all DRAM types
+  // ll: insert one refresh request in a certain interval 'refresh_interval'.
   void tick_ref() {
     clk++;
 
@@ -120,7 +121,7 @@ private:
       for (auto rank : ctrl->channel->children)
         refresh_target(ctrl, rank->id, bank_ref_counters[rank->id], -1);
     }
-    refreshed = clk;
+    refreshed = clk; //update the 'refreshed' time point to the current clk.
   }
 
   // DSARP

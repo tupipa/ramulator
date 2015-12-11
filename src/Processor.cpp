@@ -35,6 +35,10 @@ using namespace ramulator;
  *
  * cite:https://en.wikipedia.org/wiki/Out-of-order_execution
  *      http://home.gwu.edu/~jiec/docs/sesc/sesc_intro.pdf
+
+
+ * callback is bound to Processor::receive(). 
+ *   This method is used for memory to send feedback to cpu when the data is ready for use.
  *		
  */
 

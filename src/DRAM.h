@@ -403,6 +403,13 @@ void DRAM<T>::update_timing(typename T::Command cmd, const int* addr, long clk)
 
 }
 
+/*
+ * @addr,
+ * @delta, ???
+ * @clk
+ *
+*/
+
 template <typename T>
 void DRAM<T>::update_serving_requests(const int* addr, int delta, long clk) {
   assert(id == addr[int(level)]);

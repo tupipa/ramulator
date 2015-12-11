@@ -249,13 +249,23 @@ public:
         // necessary for coherence
         if (req.type == Request::Type::READ && find_if(writeq.q.begin(), writeq.q.end(),
                 [req](Request& wreq){ return req.addr == wreq.addr;}) != writeq.q.end()){
-            req.depart = clk + 1;
-            pending.push_back(req);
+            req.depart = clk + 1;		//ll: write to a same address exists, the read will finished immediately by next clock;
+            pending.push_back(req);		//    ? only one clock to read the data from the write queue instead of reading from DRAM?
             readq.q.pop_back();
         }
         return true;
     }
-
+	/* Rq & ll:
+	 * 
+	 * after data is ready, send feedback to cpu via 'req.callback',
+	 *	 'req.callback' is bound to 'Processor::receive(Request &)' method.
+	 *
+	 * question:
+	 	 1, how the Controller::tick() simulates the memroy R/W
+	 	 2, how to compute the time/cycles cost of a R/W
+	 	 3, can we emualte the ECC cost here?
+	 *
+	 */
     void tick()
     {
         clk++;
@@ -279,7 +289,7 @@ public:
         }
 
         /*** 2. Refresh scheduler ***/
-        refresh->tick_ref();
+        refresh->tick_ref(); //Rq: tick_ref() will do refresh every 'refrech_refresh' ticks.
 
         /*** 3. Should we schedule writes? ***/
         if (!write_mode) {
@@ -289,8 +299,8 @@ public:
         }
         else {
             // no -- write queue is almost empty and read queue is not empty
-            if (writeq.size() <= int(0.2 * writeq.max) && readq.size() != 0)
-                write_mode = false;
+            if (writeq.size() <= int(0.2 * writeq.max) && readq.size() != 0) //Rqll: what if there is a read that is after a write to the same address?
+                write_mode = false;											//Ans: such read will be served with one cycle and is not in readq now, simulated in Controller::enqueue(Request &).
         }
 
         /*** 4. Find the best command to schedule, if any ***/
@@ -304,7 +314,7 @@ public:
             auto cmd = T::Command::PRE;
             vector<int> victim = rowpolicy->get_victim(cmd);
             if (!victim.empty()){
-                issue_cmd(cmd, victim);
+                issue_cmd(cmd, victim);// simulate processing the request in the channel.
             }
             return;  // nothing more to be done this cycle
         }
@@ -312,7 +322,7 @@ public:
         if (req->is_first_command) {
             req->is_first_command = false;
             if (req->type == Request::Type::READ || req->type == Request::Type::WRITE) {
-              channel->update_serving_requests(req->addr_vec.data(), 1, clk);
+              channel->update_serving_requests(req->addr_vec.data(), 1, clk); // count for served requests
             }
             int tx = (channel->spec->prefetch_size * channel->spec->channel_width / 8);
             if (req->type == Request::Type::READ) {
@@ -352,11 +362,11 @@ public:
 
         // set a future completion time for read requests
         if (req->type == Request::Type::READ) {
-            req->depart = clk + channel->spec->read_latency;
+            req->depart = clk + channel->spec->read_latency; //Rq:*** simulate read latency.
             pending.push_back(*req);
         }
 
-        if (req->type == Request::Type::WRITE) {
+        if (req->type == Request::Type::WRITE) { // log the statistics
             channel->update_serving_requests(req->addr_vec.data(), -1, clk);
         }
 

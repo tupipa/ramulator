@@ -99,8 +99,8 @@ void run_cputrace(const Config& configs, Memory<T, Controller>& memory, const ch
     for (long i = 0; ; i++) {
         proc.tick(); //
         Stats::curTick++; // processor clock, global, for Statistics
-        if (i % cpu_tick == (cpu_tick - 1))
-            for (int j = 0; j < mem_tick; j++)// what's the relation? cpu_tick v.s. mem_tick?
+        if (i % cpu_tick == (cpu_tick - 1)) // do this branch every 4(=cpu_tick) cpu cycles, but why (cpu_tick-1) instead of cpu_tick
+            for (int j = 0; j < mem_tick; j++)// ? what relation: cpu_tick v.s. mem_tick; why do 1 mem per 4 cpu ticks?(1=mem_tick, 4=cpu_tick)
                 memory.tick();
       if (configs.is_early_exit()) {
         if (proc.finished())
