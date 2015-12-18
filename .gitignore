@@ -4,7 +4,7 @@
 obj/
 
 # Compiled target executable files
-Ramulator
+ramulator
 
 # for svn repo
 .svn/
