@@ -8,3 +8,6 @@ ramulator
 
 # for svn repo
 .svn/
+
+# for log in svn
+changelog.txt

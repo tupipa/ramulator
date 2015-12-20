@@ -20,6 +20,7 @@ private:
     int subarrays;
     int cpu_tick;
     int mem_tick;
+	int cores_count;
 
 public:
     Config() {}
@@ -53,6 +54,9 @@ public:
     int get_subarrays() const {return subarrays;}
     int get_ranks() const {return ranks;}
     int get_cpu_tick() const {return cpu_tick;}
+	int get_cores_count() const {return cores_count;} 
+	//TODO: each core_tick are currently equal with cpu_tick;
+    int get_core_tick(int id) const {return cpu_tick;}
     int get_mem_tick() const {return mem_tick;}
     bool has_l3_cache() const {
       if (options.find("cache") != options.end()) {

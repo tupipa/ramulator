@@ -1,6 +1,8 @@
 #ifndef __PROCESSOR_H
 #define __PROCESSOR_H
 
+#define __ENABLE_MULTICORES
+
 #include "Config.h"
 #include "Request.h"
 #include "Statistics.h"
@@ -60,12 +62,15 @@ private:
 
 class Processor {
 public:
+	int id=0;
     long clk = 0;
     long retired = 0;
     function<bool(Request)> send;
 
     Processor(const Config& configs, const char* trace_fname, function<bool(Request)> send);
-    void tick();
+	Processor(const Config& configs, const char* trace_fname, function<bool(Request)> send, int id);
+	int getID();
+	void tick();
     void receive(Request& req);
     double calc_ipc();
     bool finished();

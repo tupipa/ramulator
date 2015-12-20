@@ -65,6 +65,30 @@ Processor::Processor(const Config& configs, const char* trace_fname, function<bo
               ;
     cpu_cycles = 0;
 }
+Processor::Processor(const Config& configs, const char* trace_fname, function<bool(Request)> send, int id)
+  : id(id),send(send), callback(bind(&Processor::receive, this, placeholders::_1)), trace(trace_fname)
+{
+    more_reqs = trace.get_request(bubble_cnt, req_addr, req_type);
+
+    // regStats
+    memory_access_cycles.name("memory_access_cycles")
+                        .desc("cycle number in memory clock domain that there is at least one request in the queue of memory controller")
+                        .precision(0)
+                        ;
+    memory_access_cycles = 0;
+    cpu_inst.name("cpu_instructions")
+            .desc("commited cpu instruction number")
+            .precision(0)
+            ;
+    cpu_inst = 0;
+    cpu_cycles.name("cpu_cycles")
+              .desc("CPU cycle of the whole execution")
+              .precision(0)
+              ;
+    cpu_cycles = 0;
+}
+
+
 
 
 double Processor::calc_ipc()
@@ -108,7 +132,10 @@ void Processor::tick()
         if (inserted == window.ipc) return;
         if (window.is_full()) return;
 
-        Request req(req_addr, req_type, callback);
+        //Request req(req_addr, req_type, callback);
+        Request req(req_addr, req_type, callback,id);
+		printf("lele: in %s: now send request <addr: 0x%lx, type %d> on core %d\n"
+				,__FUNCTION__,req_addr,req_type,id);
         if (!send(req)) return;//ll: call 'send(req)'. count for request in channel ctrl.
 
         //cout << "Inserted: " << clk << "\n";
@@ -121,7 +148,10 @@ void Processor::tick()
     else {
         // write request
         assert(req_type == Request::Type::WRITE);
-        Request req(req_addr, req_type, callback);
+        //Request req(req_addr, req_type, callback);
+        Request req(req_addr, req_type, callback,id);
+        printf("lele: in %s: now send request <addr: 0x%lx, type %d> on core %d\n"
+				,__FUNCTION__,req_addr,req_type,id);
         if (!send(req)) return; //ll: call send(req), count for request in channel ctrl.
         cpu_inst++;
     }
@@ -140,6 +170,10 @@ void Processor::receive(Request& req)
       memory_access_cycles += (req.depart - max(last, req.arrive));
       last = req.depart;
     }
+}
+
+int Processor::getID(){
+	return id;
 }
 
 

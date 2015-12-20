@@ -231,6 +231,9 @@ public:
 	 */
     bool send(Request req)
     {
+    	printf("lele: in %s: memory receive request 'send01': <addr: 0x%lx, type %d> on core %d\n"
+				,__FUNCTION__,req.addr,req.type,req.coreid);
+        
         req.addr_vec.resize(addr_bits.size());
         long addr = req.addr;
         // Each transaction size is 2^tx_bits, so first clear the lowest tx_bits bits
@@ -500,7 +503,11 @@ public:
 
     bool send(Request req)
     {
+    	printf("lele: in %s: memory receive request 'send02_speedy': <addr: 0x%lx, type %d> on core %d\n"
+				,__FUNCTION__,req.addr,req.type,req.coreid);
+        
         req.addr_vec.resize(addr_bits.size());
+		
         long addr = req.addr;
         // Each transaction size is 2^tx_bits, so first clear the lowest tx_bits bits
         clear_lower_bits(addr, tx_bits);

@@ -54,6 +54,8 @@ void Config::parse(const string& fname)
           cpu_tick = atoi(tokens[1].c_str());
         } else if (tokens[0] == "mem_tick") {
           mem_tick = atoi(tokens[1].c_str());
+        }	else if (tokens[0] == "cores_count") {
+          cores_count = atoi(tokens[1].c_str());
         }
     }
     file.close();
