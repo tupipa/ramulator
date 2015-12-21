@@ -1,5 +1,6 @@
 #include "Processor.h"
 #include <cassert>
+#include <string>
 
 using namespace std;
 using namespace ramulator;
@@ -134,8 +135,13 @@ void Processor::tick()
 
         //Request req(req_addr, req_type, callback);
         Request req(req_addr, req_type, callback,id);
+<<<<<<< .mine
 		printf("lele: in %s: now send request <addr: 0x%lx, type %d> on core %d\n"
 				,__FUNCTION__,req_addr,req_type,id);
+=======
+		if(clk%100==0) printf("lele: in %s: send read request <addr: 0x%lx, type %d> on core %d, cycle %ld\n"
+				,__FUNCTION__,req_addr,req_type,id,clk);
+>>>>>>> .r69
         if (!send(req)) return;//ll: call 'send(req)'. count for request in channel ctrl.
 
         //cout << "Inserted: " << clk << "\n";
@@ -150,8 +156,13 @@ void Processor::tick()
         assert(req_type == Request::Type::WRITE);
         //Request req(req_addr, req_type, callback);
         Request req(req_addr, req_type, callback,id);
+<<<<<<< .mine
         printf("lele: in %s: now send request <addr: 0x%lx, type %d> on core %d\n"
 				,__FUNCTION__,req_addr,req_type,id);
+=======
+  		if(clk%100==0) printf("lele: in %s: send write request <addr: 0x%lx, type %d> on core %d, cycle %ld\n"
+				,__FUNCTION__,req_addr,req_type,id,clk);
+>>>>>>> .r69
         if (!send(req)) return; //ll: call send(req), count for request in channel ctrl.
         cpu_inst++;
     }
@@ -241,6 +252,7 @@ void Window::set_ready(long addr)
 
 Trace::Trace(const char* trace_fname) : file(trace_fname)
 { 
+	fname=trace_fname;
     if (!file.good()) {
         std::cerr << "Bad trace file: " << trace_fname << std::endl;
         exit(1);
@@ -272,9 +284,9 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
     }
 	//ll: read one line from trace file
     string line;
-    getline(file, line);
+	getline(file, line);
     line_num ++;
-    if (file.eof() || line.size() == 0) { //ll:reach the end of the line; or reach blank line; stop.
+	if (file.eof() || line.size() == 0) { //ll:reach the end of the line; or reach blank line; stop.
         file.clear();
         file.seekg(0);
         // getline(file, line);
@@ -282,6 +294,22 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
         return false;
     }
 
+	
+	//skip the line start with #. lele, 12-20-2015
+	while (line.at(line.find_first_not_of(' '))=='#'){
+		printf("lele: skip line %d in %s: '%s'\n",line_num,fname,line.c_str());
+		getline(file, line);
+    	line_num ++;
+		if (file.eof() || line.size() == 0) { //ll:reach the end of the line; or reach blank line; stop.
+	        file.clear();
+	        file.seekg(0);
+	        // getline(file, line);
+	        line_num = 0;
+	        return false;
+    	}
+	}
+    //printf("lele: get line %d in %s: '%s'\n",line_num,fname,line.c_str());
+	//exit(0);
 	//ll: parse one request line. Format: <bubble, addr, type>
     size_t pos, end;
     bubble_cnt = std::stoul(line, &pos, 10);
@@ -296,7 +324,17 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
     if (pos != string::npos){
         has_write = true;
         write_addr = stoul(line.substr(pos), NULL, 0);
+<<<<<<< .mine
+=======
+	//	std::cout << "lelema: in "<<__FUNCTION__<<": trace line "<<line_num<<"<" << bubble_cnt<<","<<req_addr <<","<<write_addr<<">"<< std::endl;
+>>>>>>> .r69
     }
+<<<<<<< .mine
+=======
+	else{	
+	//std::cout << "lelema: in "<<__FUNCTION__<<": trace line "<<line_num<<"<" << bubble_cnt<<","<<req_addr <<">"<< std::endl;
+	}
+>>>>>>> .r69
     return true; //read a request successfully from the trace file.
 }
 

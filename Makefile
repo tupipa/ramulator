@@ -13,10 +13,11 @@ CXXFLAGS := -O3 -std=c++11 -g -Wall
 
 .PHONY: all clean depend
 
-all: depend ramulator
+#all: depend ramulator
+all: depend ramulatorMulti
 
 clean:
-	rm -f ramulator
+	rm -f ramulatorMulti
 	rm -rf $(OBJDIR)
 
 depend: $(OBJDIR)/.depend
@@ -32,7 +33,8 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 
-ramulator: $(MAIN) $(OBJS) $(SRCDIR)/*.h | depend
+#ramulator: $(MAIN) $(OBJS) $(SRCDIR)/*.h | depend
+ramulatorMulti: $(MAIN) $(OBJS) $(SRCDIR)/*.h | depend
 	$(CXX) $(CXXFLAGS) -DRAMULATOR -o $@ $(MAIN) $(OBJS)
 
 $(OBJS): | $(OBJDIR)

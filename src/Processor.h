@@ -18,6 +18,9 @@ namespace ramulator
 
 class Trace {
 public:
+
+	const char* fname;
+
     Trace(const char* trace_fname);
     // trace file format 1:
     // [# of bubbles(non-mem instructions)] [read address(dec or hex)] <optional: write address(evicted cacheline)>

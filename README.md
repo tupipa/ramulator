@@ -1,3 +1,96 @@
+#######################################################################
+#
+#	this is a quick start up for RamulatorMulti, a multicored version of Ramulator.
+#	source files can be got by:
+#		$git clone https://github.com/tupipa/ramulator -b dualcore
+#
+
+## Usage
+
+RamulatorMulti supports four different usage modes.
+
+1. **Memory Trace Driven:** Ramulator directly reads memory traces from a
+  file, and simulates only the DRAM subsystem. Each line in the trace file 
+  represents a memory request, with the hexadecimal address followed by 'R' 
+  or 'W' for read or write.
+
+  - 0x12345680 R
+  - 0x4cbd56c0 W
+  - ...
+
+
+2. **Single Core CPU Trace Driven:** Ramulator directly reads instruction traces from a 
+  file, and simulates a simplified model of a "core" that generates memory 
+  requests to the DRAM subsystem. Each line in the trace file represents a 
+  memory request, and can have one of the following two formats.
+
+  - `<num-cpuinst> <addr-read>`: For a line with two tokens, the first token 
+        represents the number of CPU (i.e., non-memory) instructions before
+        the memory request, and the second token is the decimal address of a
+        *read*. 
+
+  - `<num-cpuinst> <addr-read> <addr-writeback>`: For a line with three tokens,
+        the third token is the decimal address of the *writeback* request, 
+        which is the dirty cache-line eviction caused by the read request
+        before it.
+		
+3. **Multi Core CPU Traces Driven:** Ramulator directly reads instruction traces from a 
+  file, and simulates a simplified model of a "multi-cores" that generates memory 
+  requests to the DRAM subsystem. Each core servicing one trace file represents a
+  process running on that core.
+
+4. **gem5 Driven:** Ramulator runs as part of a full-system simulator (gem5
+  \[6\]), from which it receives memory request as they are generated.
+
+
+## Getting Started
+
+RamulatorMulti requires a C++11 compiler (e.g., `clang++`, `g++-5`).
+
+1. **Memory Trace Driven**
+
+        $ cd ramulator
+        $ make -j
+        $ ./ramulatorMulti configs/DDR3-config.cfg --mode=dram dram.trace
+        Simulation done. Statistics written to DDR3.stats
+        # NOTE: dram.trace is a very short trace file provided only as an example.
+        $ ./ramulator configs/DDR3-config.cfg --mode=dram --stats my_output.txt dram.trace
+        Simulation done. Statistics written to my_output.txt
+        # NOTE: optional --stats flag changes the statistics output filename
+
+
+2. **Single Core CPU Core Trace Driven**
+
+        $ cd ramulator
+        $ make -j
+        $ ./ramulatorMulti configs/DDR3-config.cfg --mode=cpu cpu.trace
+        Simulation done. Statistics written to DDR3.stats
+        # NOTE: cpu.trace is a very short trace file provided only as an example.
+        $ ./ramulator configs/DDR3-config.cfg --mode=cpu --stats my_output.txt cpu.trace
+        Simulation done. Statistics written to my_output.txt
+        # NOTE: optional --stats flag changes the statistics output filename
+
+3. **Multicore CPU Core Trace Driven**
+
+        $ cd ramulator
+        $ make -j
+        $ ./ramulatorMulti configs/DDR3-config.cfg --mode=multicores cpu.trace cpu.trace cpu.trace
+        Simulation done. Statistics written to DDR3.stats
+        # NOTE: cpu.trace is a very short trace file provided only as an example.
+        $ ./ramulator configs/DDR3-config.cfg --mode=cpu --stats my_output.txt cpu.trace cpu.trace cpu.trace
+        Simulation done. Statistics written to my_output.txt
+        # NOTE: optional --stats flag changes the statistics output filename
+
+
+
+
+#####################################################################################################################
+#
+#	below is original for original version of Ramulator: https://github.com/CMU-SAFARI/ramulator
+#
+#
+
+
 # Ramulator: A DRAM Simulator
 
 Ramulator is a fast and cycle-accurate DRAM simulator \[1\] that supports a

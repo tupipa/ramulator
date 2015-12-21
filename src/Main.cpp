@@ -183,7 +183,7 @@ void run_cputraces(const Config& configs, Memory<T, Controller>& memory,
 		for (auto core : cores) {
           if(!core->finished()) {
 		  	all_finished=false; 
-		  	printf("lele: in %s: core %d not finished\n",__FUNCTION__,core->getID());
+		  	//printf("lele: in %s: core %d not finished\n",__FUNCTION__,core->getID());
 		  	//break;
 		  }
         }	
@@ -198,9 +198,9 @@ void run_cputraces(const Config& configs, Memory<T, Controller>& memory,
 		for (auto core : cores) {
           if(!core->finished()) {
 		  	all_finished=false; 
-		  	printf("lele: in %s: core %d not finished\n",__FUNCTION__,core->getID());
-		  	//break;
-			}
+		  	//printf("lele: in %s: core %d not finished\n",__FUNCTION__,core->getID());
+		  	break;
+		  }
         }	
         if (all_finished && (memory.pending_requests() == 0)) break; 
       }

@@ -231,8 +231,8 @@ public:
 	 */
     bool send(Request req)
     {
-    	printf("lele: in %s: memory receive request 'send01': <addr: 0x%lx, type %d> on core %d\n"
-				,__FUNCTION__,req.addr,req.type,req.coreid);
+    	//printf("lele: in %s: memory receive request 'send01': <addr: 0x%lx, type %d> on core %d\n"
+			//	,__FUNCTION__,req.addr,req.type,req.coreid);
         
         req.addr_vec.resize(addr_bits.size());
         long addr = req.addr;
