@@ -79,8 +79,8 @@ public:
         // make sure 2^N channels/ranks
         // TODO support channel number that is not powers of 2
         int *sz = spec->org_entry.count;
-        assert((sz[0] & (sz[0] - 1)) == 0);
-        assert((sz[1] & (sz[1] - 1)) == 0);
+        assert((sz[0] & (sz[0] - 1)) == 0);//ll: make sure only one '1' in the sz[0].
+        assert((sz[1] & (sz[1] - 1)) == 0);//ll: make sure only one '1' in the sz[1]
         // validate size of one transaction. ll: what's transaction here?
         int tx = (spec->prefetch_size * spec->channel_width / 8);
         tx_bits = calc_log2(tx);
@@ -503,8 +503,8 @@ public:
 
     bool send(Request req)
     {
-    	printf("lele: in %s: memory receive request 'send02_speedy': <addr: 0x%lx, type %d> on core %d\n"
-				,__FUNCTION__,req.addr,req.type,req.coreid);
+    	//printf("lele: in %s: memory receive request 'send02_speedy': <addr: 0x%lx, type %d> on core %d\n"
+		//		,__FUNCTION__,req.addr,req.type,req.coreid);
         
         req.addr_vec.resize(addr_bits.size());
 		

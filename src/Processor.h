@@ -15,6 +15,9 @@
 
 namespace ramulator 
 {
+	
+//ScalarStat cpu_cycles_main;
+//VectorStat core_cycles_main;
 
 class Trace {
 public:
@@ -91,6 +94,7 @@ private:
     ScalarStat memory_access_cycles;
     ScalarStat cpu_inst;
     ScalarStat cpu_cycles;
+	ScalarStat core_cycles; //lele: cycles per core.
     long last = 0;
 };
 

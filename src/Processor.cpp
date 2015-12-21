@@ -1,5 +1,6 @@
 #include "Processor.h"
 #include <cassert>
+#include <sstream>
 #include <string>
 
 using namespace std;
@@ -65,6 +66,8 @@ Processor::Processor(const Config& configs, const char* trace_fname, function<bo
               .precision(0)
               ;
     cpu_cycles = 0;
+	
+	
 }
 Processor::Processor(const Config& configs, const char* trace_fname, function<bool(Request)> send, int id)
   : id(id),send(send), callback(bind(&Processor::receive, this, placeholders::_1)), trace(trace_fname)
@@ -83,10 +86,29 @@ Processor::Processor(const Config& configs, const char* trace_fname, function<bo
             ;
     cpu_inst = 0;
     cpu_cycles.name("cpu_cycles")
-              .desc("CPU cycle of the whole execution")
+              .desc("lele: CPU cycle of the whole execution")
               .precision(0)
               ;
     cpu_cycles = 0;
+	
+	//lele: try to count for cycles per core here:
+    std::stringstream ss;
+	//const char * stringSS=;
+	ss<<"core_cycles on core["<<id<<"]";
+	std::stringstream ss2;
+	const char * stringSS2="lele: core cycles during execution of ";
+	ss2<<stringSS2<<trace_fname;
+
+	//core_cycles.name("core_cycles ["+id+"]")
+        //      .desc("lele: core cycles during execution of:"+trace_fname)
+	//.precision(0)
+	//     ;
+	core_cycles.name(ss.str())
+	  		   .desc(ss2.str())
+               .precision(0)
+               ;
+    core_cycles = 0;
+	//core_cycles.init();
 }
 
 
@@ -111,6 +133,9 @@ void Processor::tick()
     clk++;
     cpu_cycles++;
 
+	//lele: count for cycles per core here:
+	core_cycles++;
+	
     retired += window.retire();
 
     if (!more_reqs) return;
@@ -135,13 +160,8 @@ void Processor::tick()
 
         //Request req(req_addr, req_type, callback);
         Request req(req_addr, req_type, callback,id);
-<<<<<<< .mine
-		printf("lele: in %s: now send request <addr: 0x%lx, type %d> on core %d\n"
-				,__FUNCTION__,req_addr,req_type,id);
-=======
 		if(clk%100==0) printf("lele: in %s: send read request <addr: 0x%lx, type %d> on core %d, cycle %ld\n"
 				,__FUNCTION__,req_addr,req_type,id,clk);
->>>>>>> .r69
         if (!send(req)) return;//ll: call 'send(req)'. count for request in channel ctrl.
 
         //cout << "Inserted: " << clk << "\n";
@@ -156,13 +176,8 @@ void Processor::tick()
         assert(req_type == Request::Type::WRITE);
         //Request req(req_addr, req_type, callback);
         Request req(req_addr, req_type, callback,id);
-<<<<<<< .mine
-        printf("lele: in %s: now send request <addr: 0x%lx, type %d> on core %d\n"
-				,__FUNCTION__,req_addr,req_type,id);
-=======
   		if(clk%100==0) printf("lele: in %s: send write request <addr: 0x%lx, type %d> on core %d, cycle %ld\n"
 				,__FUNCTION__,req_addr,req_type,id,clk);
->>>>>>> .r69
         if (!send(req)) return; //ll: call send(req), count for request in channel ctrl.
         cpu_inst++;
     }
@@ -313,28 +328,22 @@ bool Trace::get_request(long& bubble_cnt, long& req_addr, Request::Type& req_typ
 	//ll: parse one request line. Format: <bubble, addr, type>
     size_t pos, end;
     bubble_cnt = std::stoul(line, &pos, 10);
-    std::cout << "lelema: in Processor.cpp, Trace::get_request(): Bubble_Count: " << bubble_cnt << std::endl;
+    //std::cout << "lelema: in Processor.cpp, Trace::get_request(): Bubble_Count: " << bubble_cnt << std::endl;
 
     pos = line.find_first_not_of(' ', pos+1);
     req_addr = stoul(line.substr(pos), &end, 0);
-    std::cout << "lelema: in Processor.cpp, Trace::get_request(): Req_Addr: " << req_addr << std::endl;
+    //std::cout << "lelema: in Processor.cpp, Trace::get_request(): Req_Addr: " << req_addr << std::endl;
     req_type = Request::Type::READ; // all read ????
 
     pos = line.find_first_not_of(' ', pos+end);
     if (pos != string::npos){
         has_write = true;
         write_addr = stoul(line.substr(pos), NULL, 0);
-<<<<<<< .mine
-=======
 	//	std::cout << "lelema: in "<<__FUNCTION__<<": trace line "<<line_num<<"<" << bubble_cnt<<","<<req_addr <<","<<write_addr<<">"<< std::endl;
->>>>>>> .r69
     }
-<<<<<<< .mine
-=======
 	else{	
 	//std::cout << "lelema: in "<<__FUNCTION__<<": trace line "<<line_num<<"<" << bubble_cnt<<","<<req_addr <<">"<< std::endl;
 	}
->>>>>>> .r69
     return true; //read a request successfully from the trace file.
 }
 

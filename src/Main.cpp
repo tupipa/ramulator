@@ -131,6 +131,7 @@ void run_cputraces(const Config& configs, Memory<T, Controller>& memory,
 		exit(-1);
 	}
 	int coresCount = configs.get_cores_count();
+	
 	//printf("lele:in %s: coresCount parsed and read from config: %d. \n",__PRETTY_FUNCTION__,coresCount);
     printf("lele:in %s: coresCount parsed and read from config: %d. \n",__FUNCTION__,coresCount);
     int cpu_tick = configs.get_cpu_tick();
@@ -139,6 +140,8 @@ void run_cputraces(const Config& configs, Memory<T, Controller>& memory,
 	
 	//printf("lele:in %s: cpu_tick= %d.\t mem_tick=%d\n",__PRETTY_FUNCTION__,cpu_tick,mem_tick);
 	printf("lele:in %s: cpu_tick= %d.\t mem_tick=%d\n",__FUNCTION__,cpu_tick,mem_tick);
+
+
 	
 	//exit(0); // for test
 	
@@ -147,7 +150,27 @@ void run_cputraces(const Config& configs, Memory<T, Controller>& memory,
     //  send function can be called like 'send(parameter2);' where parameter2 will fill the placeholder _1.
     
     auto send = bind(&Memory<T, Controller>::send, &memory, placeholders::_1);
-    // create Processor using <configs, trace filename, send function);>
+
+	// for test:
+		// add counters for cpu and per-core ticks here for comparing and verification
+		
+		ScalarStat cpu_cycles_main;
+		VectorStat core_cycles_main;
+		
+	
+		cpu_cycles_main.name("cpu_cycles_main")
+				  .desc("lele: CPU cycle of the whole execution(test for Comparing)")
+				  .precision(0)
+				  ;
+		cpu_cycles_main = 0;
+		
+		core_cycles_main
+				.init(coresCount)
+				.name("core_cycles_main")
+				.desc("lele: core cycles during the whole execution(test for comparing)")
+				;
+
+	// create Processor using <configs, trace filename, send function);>
     //  matching constructor Processor(const Config& configs, const char* trace_fname, function<bool(Request)> send)
     //Processor proc(configs, file, send);
     //Processor proc0(configs, file, send);
@@ -166,7 +189,9 @@ void run_cputraces(const Config& configs, Memory<T, Controller>& memory,
         //proc.tick(); 
         for (auto core : cores) {
           core->tick();
-		  printf("lele: in %s: core %d tick\n",__FUNCTION__,core->getID());
+		  ++core_cycles_main[core->getID()];
+		  ++cpu_cycles_main;
+		  //printf("lele: in %s: core %d tick\n",__FUNCTION__,core->getID());
           //Stats::curTick++; // processor clock, global, for Statistics
         }	
         Stats::curTick++; // processor clock, global, for Statistics

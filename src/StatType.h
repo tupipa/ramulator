@@ -113,7 +113,7 @@ class Stat : public StatBase {
   std::string separatorString;
  public:
   Stat() {
-    statlist.add(selfptr());
+    statlist.add(selfptr()); // ll: add to list automatically for each new instance.
   }
   Derived &self() {return *static_cast<Derived*>(this);}
   Derived *selfptr() {return static_cast<Derived*>(this);}
@@ -308,6 +308,7 @@ class VectorBase: public Stat<Derived> {
   std::vector<Element> data;
 
  public:
+ 	//ll: initial the size of the vector, i.e. the total number of elements in this vector.
   void init(size_type __size) {
     _size = __size;
     data.resize(size());
