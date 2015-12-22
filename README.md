@@ -1,9 +1,11 @@
 #######################################################################
 #
 #	this is a quick start up for RamulatorMulti, a multicored version of Ramulator.
+
+
 #	source files can be got by:
-#		$git clone https://github.com/tupipa/ramulator -b dualcore
-#
+		$git clone https://github.com/tupipa/ramulator -b dualcore
+
 
 ## Usage
 
@@ -54,7 +56,7 @@ RamulatorMulti requires a C++11 compiler (e.g., `clang++`, `g++-5`).
         $ ./ramulatorMulti configs/DDR3-config.cfg --mode=dram dram.trace
         Simulation done. Statistics written to DDR3.stats
         # NOTE: dram.trace is a very short trace file provided only as an example.
-        $ ./ramulator configs/DDR3-config.cfg --mode=dram --stats my_output.txt dram.trace
+        $ ./ramulatorMulti configs/DDR3-config.cfg --mode=dram --stats my_output.txt dram.trace
         Simulation done. Statistics written to my_output.txt
         # NOTE: optional --stats flag changes the statistics output filename
 
@@ -64,20 +66,33 @@ RamulatorMulti requires a C++11 compiler (e.g., `clang++`, `g++-5`).
         $ cd ramulator
         $ make -j
         $ ./ramulatorMulti configs/DDR3-config.cfg --mode=cpu cpu.trace
+		#(many outputs here)
         Simulation done. Statistics written to DDR3.stats
         # NOTE: cpu.trace is a very short trace file provided only as an example.
-        $ ./ramulator configs/DDR3-config.cfg --mode=cpu --stats my_output.txt cpu.trace
+        $ ./ramulatorMulti configs/DDR3-config.cfg --mode=cpu --stats my_output.txt cpu.trace
+		#(many outputs here)
         Simulation done. Statistics written to my_output.txt
         # NOTE: optional --stats flag changes the statistics output filename
 
 3. **Multicore CPU Core Trace Driven**
-
+		# Note: Before you run with multicore feature, you should set the number of cores in the configure file for each DRAM standard.
+		#
+		#	An example setting can be seen in configs/DDR3-config.cfg. The line 
+		#		cores_count = 3
+		# 	is to set three cores for the CPU in RamulatorMulti.
+		# 		
         $ cd ramulator
         $ make -j
         $ ./ramulatorMulti configs/DDR3-config.cfg --mode=multicores cpu.trace cpu.trace cpu.trace
+        #(many outputs here)
         Simulation done. Statistics written to DDR3.stats
         # NOTE: cpu.trace is a very short trace file provided only as an example.
-        $ ./ramulator configs/DDR3-config.cfg --mode=cpu --stats my_output.txt cpu.trace cpu.trace cpu.trace
+        # you can append as many trace file as you need to the end of the command
+        # TODO: currently, each core compute one file only. Files more than number of cores will be ignored. 
+        # So, if you have 4 cores, the first 4 trace files will be computed, other will be ignored if you have.
+        
+        $ ./ramulatorMulti configs/DDR3-config.cfg --mode=cpu --stats my_output.txt cpu.trace cpu.trace cpu.trace
+        #(many outputs here)
         Simulation done. Statistics written to my_output.txt
         # NOTE: optional --stats flag changes the statistics output filename
 
