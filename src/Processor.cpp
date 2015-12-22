@@ -93,22 +93,17 @@ Processor::Processor(const Config& configs, const char* trace_fname, function<bo
 	
 	//lele: try to count for cycles per core here:
     std::stringstream ss;
-	//const char * stringSS=;
+	//
 	ss<<"core_cycles on core["<<id<<"]";
 	std::stringstream ss2;
 	const char * stringSS2="lele: core cycles during execution of ";
 	ss2<<stringSS2<<trace_fname;
-
-	//core_cycles.name("core_cycles ["+id+"]")
-        //      .desc("lele: core cycles during execution of:"+trace_fname)
-	//.precision(0)
-	//     ;
 	core_cycles.name(ss.str())
 	  		   .desc(ss2.str())
                .precision(0)
                ;
     core_cycles = 0;
-	//core_cycles.init();
+	
 }
 
 

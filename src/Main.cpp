@@ -122,14 +122,19 @@ void run_cputrace(const Config& configs, Memory<T, Controller>& memory, const ch
 #ifdef __ENABLE_MULTICORES
 
 template <typename T>
-void run_cputraces(const Config& configs, Memory<T, Controller>& memory, 
-						std::vector <const char *> files, int filesCount)
+void run_cputraces(const Config& configs, 
+							Memory<T, Controller>& memory, 
+							std::vector <const char *> files, 
+							int filesCount)
 {
-	if(filesCount<2){
-		printf("Need at least 2 trace files as input traces. Now do nothing and exit.\n");
+	
+	if(filesCount<2){ 
+		printf("Need at least 2 trace files as input traces. 
+				Now do nothing and exit.\n");
 		
 		exit(-1);
 	}
+	// get number of cores from config file
 	int coresCount = configs.get_cores_count();
 	
 	//printf("lele:in %s: coresCount parsed and read from config: %d. \n",__PRETTY_FUNCTION__,coresCount);
@@ -381,8 +386,11 @@ int main(int argc, const char *argv[])
 	  }
 	}
 	//return 0;
-	/* parse the standard name, create the instance for that standard Class,
-	 * and start to run with <configs, standard instance, trace filename> 
+	/* 1) parse the standard name, 
+	 * 2) create the instance for that standard Class,
+	 * 3) and start to run with 
+	 		<configs, standard, trace> if in cpu mode.
+	 * 		<configs, standard, traceVector, fileCount> if in multicores mode.
 	 */
     if (standard == "DDR3") {
       DDR3* ddr3 = new DDR3(configs["org"], configs["speed"]);
@@ -394,7 +402,8 @@ int main(int argc, const char *argv[])
 	  	printf("lele: in %s: start_run singlecore simulation.\n",__PRETTY_FUNCTION__);
 	  	start_run(configs, ddr3, file);
 	  }
-    } //TODO: other types 
+    }
+	//TODO: other types 
 	else if (standard == "DDR4") {
       DDR4* ddr4 = new DDR4(configs["org"], configs["speed"]);
       start_run(configs, ddr4,  file);
