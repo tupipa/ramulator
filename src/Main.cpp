@@ -129,8 +129,7 @@ void run_cputraces(const Config& configs,
 {
 	
 	if(filesCount<2){ 
-		printf("Need at least 2 trace files as input traces. 
-				Now do nothing and exit.\n");
+		printf("Need at least 2 trace files as input traces. Now do nothing and exit.\n");
 		
 		exit(-1);
 	}
